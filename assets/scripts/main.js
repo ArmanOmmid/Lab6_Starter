@@ -5,13 +5,21 @@
 const recipes = [
   'https://introweb.tech/assets/json/ghostCookies.json',
   'https://introweb.tech/assets/json/birthdayCake.json',
-  'https://introweb.tech/assets/json/chocolateChip.json'
+  'https://introweb.tech/assets/json/chocolateChip.json',
+  "assets/recipes/vegan-hot-dogs.json",
+  "assets/recipes/noodle-soup.json",
+  "assets/recipes/dirt-cup.json",
+  "assets/recipes/thanos-krispies.json",
+  "assets/recipes/krabby-patty.json",
+  "assets/recipes/sweetrolls.json",
 ];
 
 // Once all of the recipes that were specified above have been fetched, their
 // data will be added to this object below. You may use whatever you like for the
 // keys as long as it's unique, one suggestion might but the URL itself
 const recipeData = {}
+
+const hiddenElements = [];
 
 window.addEventListener('DOMContentLoaded', init);
 
@@ -24,6 +32,7 @@ async function init() {
     console.log('Recipe fetch unsuccessful');
     return;
   };
+  console.log(recipeData);
   // Add the first three recipe cards to the page
   createRecipeCards();
   // Make the "Show more" button functional
@@ -42,7 +51,15 @@ async function fetchRecipes() {
     // For part 2 - note that you can fetch local files as well, so store any JSON files you'd like to fetch
     // in the recipes folder and fetch them from there. You'll need to add their paths to the recipes array.
 
-    // Part 1 Expose - TODO
+    for(let i = 0; i < recipes.length; i++){
+      fetch(recipes[i])   //fetch returns a Promise 
+        .then(response => response.json())    //Promise is passed as parameter "response" to call response.json()
+        .then(data => {
+          recipeData[recipes[i]] = data;   //Return value of response.json is passed as data
+          if(Object.keys(recipeData).length == recipes.length) resolve(true);
+        })
+        .catch(error => reject(false));
+    }
   });
 }
 
@@ -52,8 +69,12 @@ function createRecipeCards() {
   // files with the recipeData Object above. Make sure you only display the 
   // three recipes we give you, you'll use the bindShowMore() function to
   // show any others you've added when the user clicks on the "Show more" button.
-
-  // Part 1 Expose - TODO
+  let main = document.querySelector("main");
+  for(let i = 0; i < recipes.length; i++){
+    let element = document.createElement("recipe-card");
+    element.data = recipeData[recipes[i]];
+    if(i < 3) main.appendChild(element); else hiddenElements.push(element);
+  }
 }
 
 function bindShowMore() {
@@ -64,5 +85,20 @@ function bindShowMore() {
   // display it or not, so you don't need to fetch them again. Simply access them
   // in the recipeData object where you stored them/
 
-  // Part 2 Explore - TODO
+  var showMore = document.getElementById("button-wrapper").querySelector("button");
+  showMore.addEventListener("click", (event) => {
+    let main = document.querySelector("main");
+    if(showMore.textContent == "Show more"){
+      for(let i = 0; i < hiddenElements.length; i++){
+        main.appendChild(hiddenElements[i]);
+      }
+      showMore.textContent = "Show less";
+    }
+    else{
+      for(let i = 0; i < hiddenElements.length; i++){
+        main.removeChild(hiddenElements[i]);
+      }
+      showMore.textContent = "Show more";
+    }
+  });
 }
