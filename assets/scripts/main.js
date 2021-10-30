@@ -36,7 +36,7 @@ async function init() {
   // Add the first three recipe cards to the page
   createRecipeCards();
   // Make the "Show more" button functional
-  bindShowMore();
+  bindShowMore(3);
 }
 
 async function fetchRecipes() {
@@ -77,25 +77,25 @@ function createRecipeCards() {
   }
 }
 
-function bindShowMore() {
+function bindShowMore(max = -1) {
   // This function is also called for you up above.
   // Use this to add the event listener to the "Show more" button, from within 
   // that listener you can then create recipe cards for the rest of the .json files
   // that were fetched. You should fetch every recipe in the beginning, whether you
   // display it or not, so you don't need to fetch them again. Simply access them
   // in the recipeData object where you stored them/
-
+  if(max == -1) max = hiddenElements.length;
   var showMore = document.getElementById("button-wrapper").querySelector("button");
   showMore.addEventListener("click", (event) => {
     let main = document.querySelector("main");
     if(showMore.textContent == "Show more"){
-      for(let i = 0; i < hiddenElements.length; i++){
+      for(let i = 0; i < max; i++){
         main.appendChild(hiddenElements[i]);
       }
       showMore.textContent = "Show less";
     }
     else{
-      for(let i = 0; i < hiddenElements.length; i++){
+      for(let i = 0; i < max; i++){
         main.removeChild(hiddenElements[i]);
       }
       showMore.textContent = "Show more";
